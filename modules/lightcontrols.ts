@@ -1,24 +1,25 @@
 import fetch from "node-fetch"
 export default class Lights {
-    private readonly address = "35.40.252.12"
+    private readonly address = "http://192.168.0.4:3333/"
     constructor() {}
 
     public on() {
         fetch(this.address + "on", {
-            method: "PUSH"
+            method: "post"
         }) 
     }
 
     public off() {
         fetch(this.address + "off", {
-            method: "PUSH"
+            method: "post"
         }) 
     }
 
     public set(color: string) {
         fetch(this.address, {
-            method: "PUSH",
-            body: JSON.stringify({hex: color})
+            method: "post",
+            body: JSON.stringify({hex: color}),
+            headers: {'Content-Type': 'application/json'}
         }) 
     }
 }

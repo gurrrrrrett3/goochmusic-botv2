@@ -1,6 +1,6 @@
 {
   "name": "goochmusic-botv2",
-  "version": "1.0.0",
+  "version": "2.1.3",
   "description": "",
   "main": "./out/index.js",
   "scripts": {

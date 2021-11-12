@@ -17,6 +17,8 @@ import Thinking from "./modules/thinking";
 import Lights from "./modules/lightcontrols";
 import debug, { checkDebug } from "./modules/debug";
 import { formatTime } from "./modules/util";
+import { emoji } from "./modules/emojis";
+import help from './modules/help';
 
 export let Debug: debug
 
@@ -58,6 +60,7 @@ Client.on("messageCreate", async (message) => {
         Debug = new debug(message.channel)
     }
 
+    Debug.user = message.author.id
 
     //COMMAND STRUCTURE
 
@@ -154,20 +157,62 @@ Client.on("messageCreate", async (message) => {
             yt.getVideo(predicate).then((url) => {
                 message.reply(url)
             })
+            break
         }
         case "LIGHT": {
             switch (predicate.toLowerCase().split(" ")[0]) {
                 case "on": {
                     Light.on()
+                    message.react(emoji.success)
                     break
                 }
                 case "off": {
                     Light.off()
+                    message.react(emoji.success)
+                    break
                 }
                 case "set": {
                     Light.set(predicate.split(" ")[1])
+                   predicate.split(" ")[1]
+                   message.react(emoji.success)
+                   break
+                }
+                case "strobe": {
+                    const col1 = predicate.split(" ")[1]
+                    const col2 = predicate.split(" ")[2]
+
+                    var times: number = 0
+
+                    const interval = setInterval(() => {
+                        if (times % 2 == 1) {
+                            Light.set(col1)
+                        } else {
+                            Light.set(col2)
+                        }
+
+                        if (times > 20) {
+                            clearInterval(interval)
+                            message.react(emoji.success)
+                        }
+
+                        times ++
+                    }, 100)
+                    break
                 }
             }
+            break
+        }
+        case "HELP": {
+
+            const args = predicate.toLowerCase().split(" ")
+
+            if (args[0] == '') {
+                message.reply({embeds: [help(0)]})
+            } else {
+                message.reply({embeds: [help(parseInt(args[0]))]})
+            }
+
+            break
         }
         case "ERROR": {
             message.reply(`"${commandText}" is not a command or an alias.`)
@@ -185,7 +230,8 @@ function alias(term: string) {
         stop: ["stop", "end", "leave"],
         skip: ["s", "skip", "next"],
         search: ["se", "search", "find", "f"],
-        light: ["l", "set"]
+        light: ["l", "set"],
+        help: ["h", "?", "help"]
     }
 
     if (alias.play.includes(term)) {
@@ -200,6 +246,8 @@ function alias(term: string) {
         return "FIND"
     } else if (alias.light.includes(term)) {
         return "LIGHT"
+    } else if (alias.help.includes(term)) {
+        return "HELP"
     } else return "ERROR"
 }
 

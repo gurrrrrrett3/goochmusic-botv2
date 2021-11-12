@@ -1,14 +1,16 @@
-import { TextChannel } from "discord.js"
+import { TextChannel } from 'discord.js';
 const DEBUG_ENABLED = true
 const CHANNEL_DEBUG = false
 
 export default class debug {
 
     logChannel: TextChannel
+    user: string
 
     constructor(channel: TextChannel) {
 
         this.logChannel = channel
+        this.user = ""
 
     }
 
@@ -16,8 +18,8 @@ export default class debug {
         if (DEBUG_ENABLED) {
             console.log(value)
 
-            if (CHANNEL_DEBUG) {
-                this.logChannel.fetch().then((c) => {
+            if (CHANNEL_DEBUG && this.user == "232510731067588608") {
+                this.logChannel.fetch().then((c:any) => {
                     if (c.isText()) {
                         c.send(`\`DEBUG: ${value}\``)
                     }

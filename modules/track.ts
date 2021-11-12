@@ -19,7 +19,7 @@ export default class Track {
 
     constructor(member: GuildMember, channel: TextChannel) {
         this.url = ""
-        this.reqestUser = member.user,
+        this.reqestUser = member.user
         this.requestMember = member
         this.requestChannel = channel
         this.videoData = {
