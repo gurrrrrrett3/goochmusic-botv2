@@ -19,12 +19,15 @@ import debug, { checkDebug } from "./modules/debug";
 import { formatTime } from "./modules/util";
 import { emoji } from "./modules/emojis";
 import help from './modules/help';
+import cyt from "./modules/cyt";
+import { MessageEmbed } from 'discord.js';
 
 export let Debug: debug
 
 const yt = new Youtube()
 const sp = new Spotify()
 const Light = new Lights()
+const CYT = new cyt()
 
 const prefix = "-"
 
@@ -159,6 +162,27 @@ Client.on("messageCreate", async (message) => {
             })
             break
         }
+        case "CYT": {
+
+            switch (predicate.toLowerCase().split(" ")[0]) {
+            case "online": {
+                message.reply({content: `There are currently ${await CYT.getOnlineCount()} players online!`})
+                break
+            }
+
+            case "pos": {
+                const name = predicate.split(" ")[1]
+
+                const data = await CYT.getPos(name)
+
+                message.reply({embeds:[new MessageEmbed().setTitle(`Position of ${data?.name}`).setDescription(`**World:** ${data?.world}\n**X:** ${data?.x}\n**Z:** ${data?.z}`)]})
+
+            }
+            
+            }
+
+            break;
+        }
         case "LIGHT": {
             switch (predicate.toLowerCase().split(" ")[0]) {
                 case "on": {
@@ -231,6 +255,7 @@ function alias(term: string) {
         skip: ["s", "skip", "next"],
         search: ["se", "search", "find", "f"],
         light: ["l", "set"],
+        cyt: ["cyt"],
         help: ["h", "?", "help"]
     }
 
@@ -246,6 +271,8 @@ function alias(term: string) {
         return "FIND"
     } else if (alias.light.includes(term)) {
         return "LIGHT"
+    } else if (alias.cyt.includes(term)) {
+        return "CYT"
     } else if (alias.help.includes(term)) {
         return "HELP"
     } else return "ERROR"
