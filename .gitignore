@@ -76,3 +76,6 @@ typings/
 .fusebox/
 
 *.js
+data/fetchEarthMarkers.json
+data/fetchEarthMarkers.json
+data/fetchWorldMarkers.json

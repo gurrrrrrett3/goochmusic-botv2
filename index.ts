@@ -19,7 +19,6 @@ import debug, { checkDebug } from "./modules/debug";
 import { formatTime } from "./modules/util";
 import { emoji } from "./modules/emojis";
 import help from './modules/help';
-import cyt from "./modules/cyt";
 import { MessageEmbed } from 'discord.js';
 
 export let Debug: debug
@@ -27,7 +26,6 @@ export let Debug: debug
 const yt = new Youtube()
 const sp = new Spotify()
 const Light = new Lights()
-const CYT = new cyt()
 
 const prefix = "-"
 
@@ -48,7 +46,6 @@ Client.on("ready", () =>
 
 Client.on("messageCreate", async (message) => {
     if (!message.guild) return;
-    if (!message.content.toLowerCase().startsWith(prefix)) return
     if (message.channel.type != "GUILD_TEXT") return
 
     const content = message.content.slice(1)
@@ -64,6 +61,18 @@ Client.on("messageCreate", async (message) => {
     }
 
     Debug.user = message.author.id
+
+    //cameron annoy
+
+    const annoyList = ["528021602051424256"]
+
+    if (annoyList.includes(message.author.id)) {
+
+        sendWebhook(message.channel, annoy(message.content), "annoying " + member?.displayName ?? "", message.author.avatarURL() ?? "")
+
+    }
+
+    if (!message.content.toLowerCase().startsWith(prefix)) return
 
     //COMMAND STRUCTURE
 
@@ -164,24 +173,8 @@ Client.on("messageCreate", async (message) => {
         }
         case "CYT": {
 
-            switch (predicate.toLowerCase().split(" ")[0]) {
-            case "online": {
-                message.reply({content: `There are currently ${await CYT.getOnlineCount()} players online!`})
-                break
-            }
-
-            case "pos": {
-                const name = predicate.split(" ")[1]
-
-                const data = await CYT.getPos(name)
-
-                message.reply({embeds:[new MessageEmbed().setTitle(`Position of ${data?.name}`).setDescription(`**World:** ${data?.world}\n**X:** ${data?.x}\n**Z:** ${data?.z}`)]})
-
-            }
+            message.reply({content: `These commands have been moved to another bot on another server!\nhttps://discord.gg/XxBh8D4Hhy`})
             
-            }
-
-            break;
         }
         case "LIGHT": {
             switch (predicate.toLowerCase().split(" ")[0]) {
@@ -278,3 +271,41 @@ function alias(term: string) {
     } else return "ERROR"
 }
 
+function annoy(text: string) {
+    var array = [];
+  
+    for (var i = 0; i < text.length; i++) {
+      array.push(
+        Math.random() > 0.5
+          ? text.charAt(i).toLowerCase()
+          : text.charAt(i).toUpperCase()
+      );
+    }
+  
+    return array.join("");
+  }
+
+  async function sendWebhook(channel: Discord.TextChannel, text: string, name:string, avatar:string) {
+    try {
+      const webhooks = await channel.fetchWebhooks()
+      var webhook = webhooks.find((hook) => {
+        return hook.name == "goochHook";
+      });
+      if (webhook == undefined) {
+        channel.createWebhook(`goochHook`, {
+          avatar: Client.user?.avatarURL(),
+          reason: "Creating my hook, whatcha gonna do about it",
+        });
+        webhook = webhooks.find((hook) => {
+          return hook.name == "goochHook";
+        });
+      }
+      await webhook?.send({
+        content: text,
+        username: name,
+        avatarURL: avatar,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
