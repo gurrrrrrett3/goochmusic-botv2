@@ -24,7 +24,7 @@ export default class Manager {
     }
 
     public skip() {
-        this.queue.next()
+        
         this.audioPlayer.stop()
     }
 
@@ -47,6 +47,12 @@ export default class Manager {
       }
 
   }
+
+  public stop() {
+        this.audioPlayer.stop()
+        this.connection.destroy()
+        this.queue.clear()
+    }
 
   private monitor() {
       this.audioPlayer.on("stateChange", (oldState, newState) => {

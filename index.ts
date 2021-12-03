@@ -165,8 +165,7 @@ Client.on("messageCreate", async (message) => {
             break
         }
         case "SKIP": {
-            message.reply("This command is currently disabled, as it is currently broken.")
-            //guildManager?.skip()
+            guildManager?.skip()
             break
         }
         case "STOP": {
@@ -182,8 +181,7 @@ Client.on("messageCreate", async (message) => {
                 guildManager = manager.get(message.guild.id)
             }
             
-            guildManager?.audioPlayer.stop()
-            guildManager?.connection.destroy()
+            guildManager?.stop()
             message.reply("Cya!")
 
             break

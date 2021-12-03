@@ -28,6 +28,10 @@ export default class Queue {
         return this.q.length
     }
 
+    public clear() {
+        this.q = []
+    }
+
     public async generateQueueImage(message: Message) {
 
         const think = new Thinking(message)
