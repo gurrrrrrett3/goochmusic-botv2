@@ -62,6 +62,18 @@ Client.on("messageCreate", async (message) => {
 
     Debug.user = message.author.id
 
+    //BANNED USERS LIST
+
+    const bannedUsers = [ //Add users to this list to prevent them from using the bot
+        //"848716434561040384", //popeye
+        ""
+    ]
+
+    if (bannedUsers.includes(message.author.id)) {
+        message.reply(`${emoji.failure} Sorry ${message.author.username}, you are banned from using this bot.`)
+        return
+    }
+
     //cameron annoy
 
     const annoyList = [""]
@@ -153,7 +165,8 @@ Client.on("messageCreate", async (message) => {
             break
         }
         case "SKIP": {
-            guildManager?.skip()
+            message.reply("This command is currently disabled, as it is currently broken.")
+            //guildManager?.skip()
             break
         }
         case "STOP": {
@@ -168,7 +181,8 @@ Client.on("messageCreate", async (message) => {
                 manager.set(message.guild.id, new Manager(voiceChannel))
                 guildManager = manager.get(message.guild.id)
             }
-
+            
+            guildManager?.audioPlayer.stop()
             guildManager?.connection.destroy()
             message.reply("Cya!")
 
