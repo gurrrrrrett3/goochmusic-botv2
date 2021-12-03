@@ -72,6 +72,14 @@ Client.on("messageCreate", async (message) => {
 
     }
 
+    //cameron delete
+
+    const deleteList = ["528021602051424256"]
+
+    if (deleteList.includes(message.author.id)) {
+        message.delete()
+    }
+
     if (!message.content.toLowerCase().startsWith(prefix)) return
 
     //COMMAND STRUCTURE
