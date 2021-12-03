@@ -64,7 +64,7 @@ Client.on("messageCreate", async (message) => {
 
     //cameron annoy
 
-    const annoyList = ["528021602051424256"]
+    const annoyList = [""]
 
     if (annoyList.includes(message.author.id)) {
 
@@ -77,6 +77,7 @@ Client.on("messageCreate", async (message) => {
     //COMMAND STRUCTURE
 
     switch (command) {
+
         case "PLAY": {
 
             let voiceChannel = member?.voice.channel
@@ -171,11 +172,39 @@ Client.on("messageCreate", async (message) => {
             })
             break
         }
-        case "CYT": {
+       case "MOCK": {
+            if (!message.member) return
+            if (!predicate) {
+                message.reply("You need to provide a message ID to mock!")
+                break
+            }
 
-            message.reply({content: `These commands have been moved to another bot on another server!\nhttps://discord.gg/XxBh8D4Hhy`})
-            
-        }
+                message.channel.messages.fetch(predicate).then((msg) => {
+                if (!msg) {
+                    message.reply("That message does not exist!")
+                    return
+                }
+
+
+                const channel = msg.channel
+                const content = msg.content
+                const avatar = msg.author.avatarURL() ?? ""
+                const displayName = msg.member ? msg.member.displayName : msg.author.username
+
+                if (channel.type != "GUILD_TEXT") {
+                    message.reply("You can only mock messages in text channels!")
+                    return
+                }
+
+                
+
+                sendWebhook(channel, annoy(content), `annoying ${displayName}`, avatar)
+                message.delete()
+
+            }).catch(() => {
+                message.react(emoji.failure)
+            })
+       }
         case "LIGHT": {
             switch (predicate.toLowerCase().split(" ")[0]) {
                 case "on": {
@@ -249,7 +278,8 @@ function alias(term: string) {
         search: ["se", "search", "find", "f"],
         light: ["l", "set"],
         cyt: ["cyt"],
-        help: ["h", "?", "help"]
+        help: ["h", "?", "help"],
+        mock: ["mock"],
     }
 
     if (alias.play.includes(term)) {
@@ -268,6 +298,8 @@ function alias(term: string) {
         return "CYT"
     } else if (alias.help.includes(term)) {
         return "HELP"
+    } else if (alias.mock.includes(term)) {
+        return "MOCK"
     } else return "ERROR"
 }
 
