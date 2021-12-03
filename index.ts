@@ -1,6 +1,6 @@
 //@typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 
-import Discord, { Message } from "discord.js";
+import Discord, { Collection, Message } from "discord.js";
 import Voice from "@discordjs/voice";
 import ytdl from "ytdl-core";
 import ytpl from "ytpl";
@@ -99,8 +99,22 @@ Client.on("messageCreate", async (message) => {
 	const deleteList = ["528021602051424256"];
 
 	if (deleteList.includes(message.author.id)) {
-		message.delete();
+		const fetchedMessages = await message.channel.messages.fetch({
+			limit: 100,
+		});
+
+		let messagesToDelete = new Collection<string, Message>();
+	
+		fetchedMessages.forEach((message) => {
+			if (deleteList.includes(message.author.id)) {
+				messagesToDelete.set(message.id, message);
+			}
+		});
+
+		message.channel.bulkDelete(messagesToDelete);
+
 	}
+
 
 	if (!message.content.toLowerCase().startsWith(prefix)) return;
 
