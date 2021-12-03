@@ -1,6 +1,10 @@
 export const emoji = {
 
     success: "✅",
-    failure: "❌"
+    failure: "❌",
+    warning: "⚠️",
+    info: "ℹ️",
+    question: "❓",
+    
 
 }
