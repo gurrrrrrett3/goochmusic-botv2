@@ -96,7 +96,7 @@ Client.on("messageCreate", async (message) => {
 
 	//cameron delete
 
-	const deleteList = ["528021602051424256"];
+	const deleteList = [""];
 
 	if (deleteList.includes(message.author.id)) {
 		const fetchedMessages = await message.channel.messages.fetch({
