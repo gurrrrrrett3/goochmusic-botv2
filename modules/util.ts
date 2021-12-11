@@ -8,7 +8,7 @@ export function formatTime(time: string | number) {
     const m = Math.floor(time / 60);
     time = time % 60;
   
-    return h > 0 ? `${p(h)}:${p(m)}:${p(time)}` : m > 0 ? `${p(m)}:${p(time)}` : `${p(time)}`;
+    return h > 0 ? `${p(h)}:${p(m)}:${p(time)}` : `${p(m)}:${p(time)}`;
   }
   
   function p(s: number) {
