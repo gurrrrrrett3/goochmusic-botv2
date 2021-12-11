@@ -32,6 +32,23 @@ export default class Queue {
         this.q = []
     }
 
+    public getTimeUntilLastSong(): number {
+
+        let time = 0
+
+        for (let i = 1; i < this.q.length; i ++) {
+
+            time += this.q[i].metadata.videoData.length
+
+        }
+
+        time += this.q[0].metadata.getTimeLeft()
+
+        return time
+
+
+    }
+
     public async generateQueueImage(message: Message) {
 
         const think = new Thinking(message)

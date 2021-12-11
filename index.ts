@@ -169,7 +169,7 @@ Client.on("messageCreate", async (message) => {
 						think.finish({
 							content: `Queued: **${t.videoData.title}** | ${formatTime(
 								t.videoData.length
-							)}`,
+							)} | It will be played in ${formatTime(guildManager?.queue?.getTimeUntilLastSong() ?? 0)}`,
 							embeds: [],
 						});
 					});
@@ -180,11 +180,11 @@ Client.on("messageCreate", async (message) => {
 		}
 		case "QUEUE": {
 			guildManager?.queue.generateQueueImage(message);
-
 			break;
 		}
 		case "SKIP": {
 			guildManager?.skip();
+			message.react(emoji.success);
 			break;
 		}
 		case "STOP": {

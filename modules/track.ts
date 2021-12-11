@@ -11,10 +11,11 @@ export default class Track {
     public reqestUser: User
     public requestMember: GuildMember
     public requestChannel: TextChannel
+    public startTime: number = 0
 
     public videoData: {
         title: string,
-        length: number //in ms
+        length: number //in seconds
     }
 
     constructor(member: GuildMember, channel: TextChannel) {
@@ -22,6 +23,7 @@ export default class Track {
         this.reqestUser = member.user
         this.requestMember = member
         this.requestChannel = channel
+        this.startTime = Date.now()
         this.videoData = {
             title: "",
             length: 0
@@ -35,8 +37,6 @@ export default class Track {
         }
 
         const startTime = Date.now()
-
-        //code taken from @discordjs/voice
 
         return new Promise(async (resolve, reject) => {
             const pr = ytexec(
@@ -88,5 +88,9 @@ export default class Track {
             this.videoData.title = data.videoDetails.title
             this.videoData.length = Number.parseInt(data.videoDetails.lengthSeconds)
         })
+    }
+
+    public getTimeLeft(): number {
+        return this.videoData.length - (Date.now() - this.startTime) / 1000
     }
 }
