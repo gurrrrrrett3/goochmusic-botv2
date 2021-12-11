@@ -42,8 +42,11 @@ export default class Manager {
   }
   public queueAudioResource(resource: AudioResource<Track>) {
       this.queue.add(resource)
+      
       if (this.queue.length() == 1) {
           this.playAudioResource(this.queue.nowPlaying())
+          this.queue.nowPlaying().metadata.setPlaying()
+          this.queue.nowPlaying().metadata.requestChannel.send(`Now Playing: ${this.queue.nowPlaying().metadata.videoData.title}`)
       }
 
   }
@@ -82,6 +85,7 @@ public getPlayerData() {
               this.queue.next()
               if (this.queue.nowPlaying()) {
                   this.playAudioResource(this.queue.nowPlaying())
+                  this.queue.nowPlaying().metadata.setPlaying()
                   this.queue.nowPlaying().metadata.requestChannel.send(`Now Playing: ${this.queue.nowPlaying().metadata.videoData.title}`)
               }
 

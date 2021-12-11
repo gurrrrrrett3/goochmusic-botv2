@@ -93,4 +93,8 @@ export default class Track {
     public getTimeLeft(): number {
         return this.videoData.length - (Date.now() - this.startTime) / 1000
     }
+
+    public setPlaying() {
+        this.startTime = Date.now()
+    }
 }
