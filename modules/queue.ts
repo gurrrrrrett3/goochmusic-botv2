@@ -36,7 +36,7 @@ export default class Queue {
 
         let time = 0
 
-        for (let i = 1; i < this.q.length; i ++) {
+        for (let i = 1; i < this.q.length - 1; i ++) {
 
             time += this.q[i].metadata.videoData.length
 
