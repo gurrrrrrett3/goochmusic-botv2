@@ -16,7 +16,7 @@ import Spotify from "./modules/spotify";
 import Thinking from "./modules/thinking";
 import Lights from "./modules/lightcontrols";
 import debug, { checkDebug } from "./modules/debug";
-import { formatTime } from "./modules/util";
+import { formatTime, formatProgressBar } from './modules/util';
 import { emoji } from "./modules/emojis";
 import help from "./modules/help";
 import { MessageEmbed } from "discord.js";
@@ -182,6 +182,23 @@ Client.on("messageCreate", async (message) => {
 			guildManager?.queue.generateQueueImage(message);
 			break;
 		}
+		case "NOWPLAYING": {
+
+			const t = guildManager?.getPlayerData();
+		
+			if (t) {
+				const embed = new MessageEmbed()
+					.setTitle(t.title)
+					.setURL(t.url)
+					.setAuthor(t.queuedBy.username, t.queuedBy.avatarURL() ?? undefined)
+					.setDescription(formatProgressBar(10, t.currentTime, t.duration))
+
+					message.reply({embeds: [embed]});
+			} else {
+				message.reply("Nothing is playing!");
+			}
+			break
+		}
 		case "SKIP": {
 			guildManager?.skip();
 			message.react(emoji.success);
@@ -308,6 +325,7 @@ function alias(term: string) {
 	const alias = {
 		play: ["p", "play", "join"],
 		queue: ["q", "queue", "songs", "list"],
+		nowPlaying: ["np", "nowplaying", "now playing"],
 		stop: ["stop", "end", "leave"],
 		skip: ["s", "skip", "next"],
 		search: ["se", "search", "find", "f"],
@@ -321,6 +339,8 @@ function alias(term: string) {
 		return "PLAY";
 	} else if (alias.queue.includes(term)) {
 		return "QUEUE";
+	} else if (alias.nowPlaying.includes(term)) {
+		return "NOWPLAYING";
 	} else if (alias.skip.includes(term)) {
 		return "SKIP";
 	} else if (alias.stop.includes(term)) {

@@ -1,3 +1,5 @@
+import { emoji } from "./emojis";
+
 export function formatTime(time: string | number) {
     time = parseInt(time.toString());
   
@@ -12,3 +14,21 @@ export function formatTime(time: string | number) {
   function p(s: number) {
     return s.toString().length == 1 ? `0${s}` : s
   };
+
+
+  export function formatProgressBar(length: number, current: number, total: number) {
+
+    const percent = Math.floor((current / total) * 100);
+
+    const barCurrent = percent / length
+
+    let progress = "";
+    for (let i = 0; i < length; i++) {
+        if (i < barCurrent) {
+            progress += emoji.progressbar.full;
+        } else {
+            progress += emoji.progressbar.empty;
+        }
+    }
+    return `|${progress}| ${formatTime(current)}/${formatTime(total)}`;
+}

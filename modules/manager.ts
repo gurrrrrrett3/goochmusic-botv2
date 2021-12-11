@@ -54,6 +54,23 @@ export default class Manager {
         this.queue.clear()
     }
 
+public getPlayerData() {
+
+        const currentTrack = this.queue.nowPlaying()
+
+        if (currentTrack) {
+
+            return {
+                title: currentTrack.metadata.videoData.title,
+                url: currentTrack.metadata.url,
+                queuedBy: currentTrack.metadata.reqestUser,
+                duration: currentTrack.metadata.videoData.length,
+                currentTime: currentTrack.metadata.videoData.length - currentTrack.metadata.getTimeLeft(),   
+            }
+
+        }
+    }
+
   private monitor() {
       this.audioPlayer.on("stateChange", (oldState, newState) => {
         

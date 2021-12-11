@@ -5,6 +5,12 @@ export const emoji = {
     warning: "⚠️",
     info: "ℹ️",
     question: "❓",
-    
+
+    //Progressbar
+
+    progressbar: {
+        empty: "⬛",
+        full: "🟦",
+    }
 
 }
