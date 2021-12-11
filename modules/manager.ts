@@ -82,6 +82,7 @@ public getPlayerData() {
               this.queue.next()
               if (this.queue.nowPlaying()) {
                   this.playAudioResource(this.queue.nowPlaying())
+                  this.queue.nowPlaying().metadata.requestChannel.send(`Now Playing: ${this.queue.nowPlaying().metadata.videoData.title}`)
               }
 
           }
