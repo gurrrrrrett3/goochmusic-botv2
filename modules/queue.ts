@@ -53,10 +53,6 @@ export default class Queue {
 		return time;
 	}
 
-    public nowPlaying() {
-        return this.q[0];
-    }
-
 	public async generateQueueImage(message: Message) {
 		const think = new Thinking(message);
 
