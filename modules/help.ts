@@ -17,7 +17,6 @@ export default function help(section: number): MessageEmbed {
             embed.setDescription("Hello, welcome to the help page! \n I've seperated the help page into groups to make it easier to navigate! \nTo access a group, do `-help #`, where the number is next to the group or command you want to access! \nI hope you find what you are looking for.")
             .setTitle("Help Main page")
             .addField("1 | Music", "Info about all the music commands!")
-            .addField("2 | Lights", "Control my LEDs!")
             .addField("More soon!", "I will update this page when needed!")
 
             break
@@ -41,6 +40,31 @@ export default function help(section: number): MessageEmbed {
             .addField("Usage", "`-p despacito`\n`-join https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb`\n `-play https://www.youtube.com/watch?v=kJQP7kiw5Fk`")
             break
         }   
+
+        case 102: {
+            embed.setDescription("Skips the currently playing song.\nAliases: `s`, `next`")
+            .addField("Usage", "`-s`\n`-next`")
+            break
+        }
+
+        case 103: {
+            embed.setDescription("Stops playing, and leaves the VC.\nAliases: `stop`, `leave`")
+            .addField("Usage", "`-stop`\n`-leave`")
+            break
+        }
+
+        case 104: {
+            embed.setDescription("Shows the list of songs that will play.\nAliases: `q`, `queue`")
+            .addField("Usage", "`-q`\n`-queue`")
+            break
+        }
+
+        case 105: {
+            embed.setDescription("Searches a term on YouTube, and gets a link.\nAliases: `find`, `search`")
+            .addField("Usage", "`-find despacito`\n`-search despacito`")
+            break
+        }
+
 
     }
 
