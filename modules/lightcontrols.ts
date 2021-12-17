@@ -1,6 +1,6 @@
 import fetch from "node-fetch"
 export default class Lights {
-    private readonly address = "http://192.168.0.4:3333/"
+    private readonly address = "http://10.1.1.4:3333/"
     constructor() {}
 
     public on() {
