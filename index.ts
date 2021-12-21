@@ -4,6 +4,7 @@ import Discord, { Collection, Message } from "discord.js";
 import Voice from "@discordjs/voice";
 import ytdl from "ytdl-core";
 import ytpl from "ytpl";
+import fs from "fs";
 
 const { getData, getPreview, getTracks } = require("spotify-url-info");
 
@@ -20,6 +21,37 @@ import { formatTime, formatProgressBar } from './modules/util';
 import { emoji } from "./modules/emojis";
 import help from "./modules/help";
 import { MessageEmbed } from "discord.js";
+
+const cbanDataFile = "./data/cban.json";
+
+let enabledCommands = {
+	PLAY: true,
+	QUEUE: true,
+	NOWPLAYING: true,
+	SKIP: true,
+	STOP: true,
+	FIND: true,
+	LIGHT: true,
+	CYT: true,
+	HELP: true,
+	MOCK: true,
+	ADMIN: true,
+	ERROR: true, //this is here to satisfy typescript, don't worry about it
+};
+
+const commandList = [
+	"PLAY",
+	"QUEUE",
+	"NOWPLAYING",
+	"SKIP",
+	"STOP",
+	"FIND",
+	"LIGHT",
+	"CYT",
+	"HELP",
+	"MOCK",
+	"ADMIN",
+];
 
 export let Debug: debug;
 
@@ -118,6 +150,30 @@ Client.on("messageCreate", async (message) => {
 
 	if (!message.content.toLowerCase().startsWith(prefix)) return;
 
+	//CHECK IF COMMAND IS ENABLED
+
+	if (enabledCommands[command] == false) {
+		message.reply(
+			`${emoji.failure} Sorry ${message.author.username}, that command is disabled.`
+		);
+		return;
+	}
+
+	//CHECK IF USER IS BANNED FROM COMMAND
+
+	const data = fs.readFileSync(cbanDataFile, "utf8");
+
+	const cbanData = JSON.parse(data);
+
+	if (cbanData[message.author.id] != undefined) {
+		if (cbanData[message.author.id][command] == true) {
+			message.reply(
+				`${emoji.failure} Sorry ${message.author.username}, you are banned from using this command.`
+			);
+			return;
+		}
+	}
+	
 	//COMMAND STRUCTURE
 
 	switch (command) {
@@ -302,7 +358,144 @@ Client.on("messageCreate", async (message) => {
 			}
 			break;
 		}
-		case "HELP": {
+
+		case "ADMIN": {
+
+			if (message.author.id != "232510731067588608") {
+				message.reply("```Error: You do not have access to this command```");
+				break;
+			}
+
+			console.log(predicate);
+
+			switch (predicate.toLowerCase().split(" ")[0]) {
+
+				case "cban": {
+				
+					const user = message.mentions.users.first();
+
+					if (!user) {
+						message.reply("You need to mention a user!");
+						break;
+					}
+
+					const command = predicate.split(" ")[1];
+
+					if (!command) {
+						message.reply("You need to provide a command!");
+						break;
+					}
+
+					let data: any  = fs.readFileSync(cbanDataFile).toString();
+					data = JSON.parse(data);
+
+					if (!data[user.id]) {
+						data[user.id] = {};
+					}
+
+					data[user.id][command] = true;
+
+					message.reply(`Banned ${user.username} from ${command}!`);
+
+					fs.writeFileSync(cbanDataFile, JSON.stringify(data, null, 4));
+
+					break
+				}
+
+				case "cunban": {
+					const user = message.mentions.users.first();
+
+					if (!user) {
+						message.reply("You need to mention a user!");
+						break;
+					}
+
+					const command = predicate.split(" ")[1];
+
+					if (!command) {
+						message.reply("You need to provide a command!");
+						break;
+					}
+
+					let data: any  = fs.readFileSync(cbanDataFile).toString();
+					data = JSON.parse(data);
+
+					if (!data[user.id]) {
+						data[user.id] = {};
+					}
+ 
+					delete data[user.id][command]
+
+					if (data[user.id] == {}) {
+
+						delete data[user.id];
+
+					}
+
+					message.reply(`Unbanned ${user.username} from ${command}!`);
+
+					fs.writeFileSync(cbanDataFile, JSON.stringify(data, null, 4));
+
+					break
+				}
+
+				case "cbanlist": {
+
+					let data: any  = fs.readFileSync(cbanDataFile.toString());
+					data = JSON.parse(data);
+
+					let output = []
+
+					for (const user in data) {
+						for (const command in data[user]) {
+							output.push(`**${Client.users.cache.get(user)?.username ?? user}** ${command}`);
+						}
+					}
+
+					message.channel.send(output.join("\n") ?? "No commands banned!");
+				}
+
+				case "dc" : {
+					//disable command
+
+					const command = predicate.split(" ")[1];
+
+					if (!commandList.includes(command)) {
+
+						message.reply("That command does not exist!");
+						break;
+					} else {
+
+					//@ts-ignore
+					enabledCommands[command] = false;
+
+					message.reply(`Command \`${command}\` has been disabled`);
+					break;
+						}
+					}
+
+				case "ec" : {
+					//enable command
+
+					const command = predicate.split(" ")[1];
+
+					if (!commandList.includes(command)) {
+
+						message.reply("That command does not exist!");
+						break;
+					}
+					//@ts-ignore
+					enabledCommands[command] = true;
+
+					message.reply(`Command \`${command}\` has been enabled`);
+					break;
+					}
+
+			}
+			break;
+
+		}
+		case "HELP": {			
 			const args = predicate.toLowerCase().split(" ");
 
 			if (args[0] == "") {
@@ -333,6 +526,7 @@ function alias(term: string) {
 		cyt: ["cyt"],
 		help: ["h", "?", "help"],
 		mock: ["mock"],
+		admin: ["admin", "a"],
 	};
 
 	if (alias.play.includes(term)) {
@@ -355,6 +549,8 @@ function alias(term: string) {
 		return "HELP";
 	} else if (alias.mock.includes(term)) {
 		return "MOCK";
+	} else if (alias.admin.includes(term)) {
+		return "ADMIN";
 	} else return "ERROR";
 }
 
