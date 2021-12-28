@@ -550,6 +550,7 @@ Client.on("messageCreate", async (message) => {
           ],
         });
       }
+	  break;
     }
     case "ERROR": {
       message.reply(`"${commandText}" is not a command or an alias.`);
