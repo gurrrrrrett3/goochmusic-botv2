@@ -367,6 +367,7 @@ Client.on("messageCreate", async (message) => {
 			],
 		  });
 		}
+		break;
 	}
 
     case "ADMIN": {
