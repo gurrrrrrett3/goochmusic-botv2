@@ -23,6 +23,7 @@ import help from "./modules/help";
 import { MessageEmbed } from "discord.js";
 
 const cbanDataFile = "./data/cban.json";
+const listDataFile = "./data/list.json";
 
 let enabledCommands = {
 	PLAY: true,
@@ -36,6 +37,7 @@ let enabledCommands = {
 	HELP: true,
 	MOCK: true,
 	ADMIN: true,
+	LIST: true,
 	ERROR: true, //this is here to satisfy typescript, don't worry about it
 };
 
@@ -51,6 +53,7 @@ const commandList = [
 	"HELP",
 	"MOCK",
 	"ADMIN",
+	"LIST",
 ];
 
 export let Debug: debug;
@@ -506,6 +509,71 @@ Client.on("messageCreate", async (message) => {
 
 			break;
 		}
+		case "LIST": {
+		
+			const args = predicate.toLowerCase().split(" ");
+
+			if (args[0] == "add") {
+			
+				const item = args[1];
+
+				if (!item) {
+					message.reply("You need to provide an item!");
+					break;
+				}
+				
+				let data: any  = fs.readFileSync(listDataFile).toString();
+				data = JSON.parse(data);
+
+				if (data.includes(item)) {
+					message.reply("That item is already in the list!");
+					break;
+				}
+
+				data.push(item);
+
+				fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
+
+			}
+
+			if (args[0] == "remove") {
+
+				const item = args[1];
+
+				if (!item) {
+					message.reply("You need to provide an item!");
+					break;
+				}
+
+				let data: any  = fs.readFileSync(listDataFile).toString();
+				data = JSON.parse(data);
+
+				if (!data.includes(item)) {
+					message.reply("That item is not in the list!");
+					break;
+				}
+
+				data.splice(data.indexOf(item), 1);
+
+				fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
+
+			}
+
+			if (args[0] == "show") {
+				
+				let data: any  = fs.readFileSync(listDataFile).toString();
+				data = JSON.parse(data);
+
+				message.reply({ embeds: [
+					new Discord.MessageEmbed()
+					.setTitle("Gucci's List")
+					.setDescription(data.join("\n"))
+					.setColor("#ff0000")
+				] });
+			}
+
+
+		}
 		case "ERROR": {
 			message.reply(`"${commandText}" is not a command or an alias.`);
 			break;
@@ -527,6 +595,7 @@ function alias(term: string) {
 		help: ["h", "?", "help"],
 		mock: ["mock"],
 		admin: ["admin", "a"],
+		list: ["list"],
 	};
 
 	if (alias.play.includes(term)) {
@@ -551,6 +620,8 @@ function alias(term: string) {
 		return "MOCK";
 	} else if (alias.admin.includes(term)) {
 		return "ADMIN";
+	} else if (alias.list.includes(term)) {
+		return "LIST";
 	} else return "ERROR";
 }
 
