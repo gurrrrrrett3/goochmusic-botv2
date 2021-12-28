@@ -534,6 +534,8 @@ Client.on("messageCreate", async (message) => {
 
 				fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
 
+				message.reply(`Added \`${item}\` to the list!`);
+
 			}
 
 			if (args[0] == "remove") {
@@ -556,6 +558,8 @@ Client.on("messageCreate", async (message) => {
 				data.splice(data.indexOf(item), 1);
 
 				fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
+
+				message.reply(`\`${item}\` removed from list!`);
 
 			}
 
