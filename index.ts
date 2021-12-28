@@ -97,52 +97,6 @@ Client.on("messageCreate", async (message) => {
 
   Debug.user = message.author.id;
 
-  //BANNED USERS LIST
-
-  const bannedUsers = [
-    //Add users to this list to prevent them from using the bot
-    //"848716434561040384", //popeye
-    "",
-  ];
-
-  if (bannedUsers.includes(message.author.id)) {
-    message.reply(`${emoji.failure} Sorry ${message.author.username}, you are banned from using this bot.`);
-    return;
-  }
-
-  //cameron annoy
-
-  const annoyList = [""];
-
-  if (annoyList.includes(message.author.id)) {
-    sendWebhook(
-      message.channel,
-      annoy(message.content),
-      "annoying " + member?.displayName ?? "",
-      message.author.avatarURL() ?? ""
-    );
-  }
-
-  //cameron delete
-
-  const deleteList = [""];
-
-  if (deleteList.includes(message.author.id)) {
-    const fetchedMessages = await message.channel.messages.fetch({
-      limit: 100,
-    });
-
-    let messagesToDelete = new Collection<string, Message>();
-
-    fetchedMessages.forEach((message) => {
-      if (deleteList.includes(message.author.id)) {
-        messagesToDelete.set(message.id, message);
-      }
-    });
-
-    message.channel.bulkDelete(messagesToDelete);
-  }
-
   if (!message.content.toLowerCase().startsWith(prefix)) return;
 
   //CHECK IF COMMAND IS ENABLED
@@ -350,6 +304,70 @@ Client.on("messageCreate", async (message) => {
       }
       break;
     }
+	case "LIST": {
+		const args = predicate.toLowerCase().split(" ");
+  
+		const item = predicate.split(" ")[1];
+  
+		if (args[0] == "add") {
+  
+  
+		  if (!item) {
+			message.reply("You need to provide an item!");
+			break;
+		  }
+  
+		  let data: any = fs.readFileSync(listDataFile).toString();
+		  data = JSON.parse(data);
+  
+		  if (data.includes(item)) {
+			message.reply("That item is already in the list!");
+			break;
+		  }
+  
+		  data.push(item);
+  
+		  fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
+  
+		  message.reply(`Added \`${item}\` to the list!`);
+		}
+  
+		if (args[0] == "remove") {
+  
+		  if (!item) {
+			message.reply("You need to provide an item!");
+			break;
+		  }
+  
+		  let data: any = fs.readFileSync(listDataFile).toString();
+		  data = JSON.parse(data);
+  
+		  if (!data.includes(item)) {
+			message.reply("That item is not in the list!");
+			break;
+		  }
+  
+		  data.splice(data.indexOf(item), 1);
+  
+		  fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
+  
+		  message.reply(`\`${item}\` removed from list!`);
+		}
+  
+		if (args[0] == "show") {
+		  let data: any = fs.readFileSync(listDataFile).toString();
+		  data = JSON.parse(data);
+  
+		  message.reply({
+			embeds: [
+			  new Discord.MessageEmbed()
+				.setTitle("Gucci's List")
+				.setDescription(data.join("\n"))
+				.setColor("#ff0000"),
+			],
+		  });
+		}
+	}
 
     case "ADMIN": {
       if (message.author.id != "232510731067588608") {
@@ -487,71 +505,6 @@ Client.on("messageCreate", async (message) => {
 
       break;
     }
-    case "LIST": {
-      const args = predicate.toLowerCase().split(" ");
-
-	  const item = predicate.split(" ")[1];
-
-      if (args[0] == "add") {
-
-
-        if (!item) {
-          message.reply("You need to provide an item!");
-          break;
-        }
-
-        let data: any = fs.readFileSync(listDataFile).toString();
-        data = JSON.parse(data);
-
-        if (data.includes(item)) {
-          message.reply("That item is already in the list!");
-          break;
-        }
-
-        data.push(item);
-
-        fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
-
-        message.reply(`Added \`${item}\` to the list!`);
-      }
-
-      if (args[0] == "remove") {
-
-        if (!item) {
-          message.reply("You need to provide an item!");
-          break;
-        }
-
-        let data: any = fs.readFileSync(listDataFile).toString();
-        data = JSON.parse(data);
-
-        if (!data.includes(item)) {
-          message.reply("That item is not in the list!");
-          break;
-        }
-
-        data.splice(data.indexOf(item), 1);
-
-        fs.writeFileSync(listDataFile, JSON.stringify(data, null, 4));
-
-        message.reply(`\`${item}\` removed from list!`);
-      }
-
-      if (args[0] == "show") {
-        let data: any = fs.readFileSync(listDataFile).toString();
-        data = JSON.parse(data);
-
-        message.reply({
-          embeds: [
-            new Discord.MessageEmbed()
-              .setTitle("Gucci's List")
-              .setDescription(data.join("\n"))
-              .setColor("#ff0000"),
-          ],
-        });
-      }
-	  break;
-    }
     case "ERROR": {
       message.reply(`"${commandText}" is not a command or an alias.`);
       break;
@@ -563,7 +516,7 @@ Client.on("messageCreate", async (message) => {
 function alias(term: string) {
   const alias = {
     play: ["p", "play", "join"],
-    queue: ["q", "queue", "songs", "list"],
+    queue: ["q", "queue", "songs"],
     nowPlaying: ["np", "nowplaying", "now playing"],
     stop: ["stop", "end", "leave"],
     skip: ["s", "skip", "next"],
@@ -573,7 +526,7 @@ function alias(term: string) {
     help: ["h", "?", "help"],
     mock: ["mock"],
     admin: ["admin", "a"],
-    list: ["list"],
+    list: ["list", "li"],
   };
 
   if (alias.play.includes(term)) {
